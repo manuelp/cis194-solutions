@@ -32,3 +32,17 @@ digitalize n = map (takeDigit n) [(numDigits n),(numDigits n)-1..1]
 
 numDigits :: Integer -> Integer
 numDigits n = fromIntegral (length (show n))
+
+-- Exercise 5 (Tower of Hanoi)
+-- Sposta la torre di Hanoi dal primo Peg al secondo, usando il terzo come temporaneo
+type Peg = String
+type Move = (Peg, Peg)
+hanoi :: Integer -> Peg -> Peg -> Peg -> [Move]
+hanoi 1 a b c = [(a, b)]
+hanoi n a b c = (hanoi (n - 1) a c b) ++ [(a, b)] ++ (hanoi (n - 1) c b a)
+
+-- hanoi 2 "a" "b" "c" == [("a","c"), ("a","b"), ("c","b")]
+
+-- Bellissimo, molto conciso e naturale. Non è tail-recursive, ma compilato e tutto
+-- funziona tranquillamente senza far esplodere lo stack o l'heap. Cfr con l'implementazione
+-- in Clojure che è meno bella (certo, il motivo è che la JVM non fornisce la TCO).
