@@ -4,15 +4,16 @@ module LogAnalysis where
 import Log
 
 -- Exercise 1
-parseMessage :: String -> LogMessage
-parseMessage s = case (words s) of
-  ("I":ts:msg) -> LogMessage Info (read ts) (unwords msg)
-  ("W":ts:msg) -> LogMessage Warning (read ts) (unwords msg)
-  ("E":code:ts:msg) -> LogMessage (Error (read code)) (read ts) (unwords msg)
-  _ -> Unknown s
+type Token = String
+
+parseMessage :: [Token] -> LogMessage
+parseMessage ("I":ts:msg) = LogMessage Info (read ts) (unwords msg)
+parseMessage ("W":ts:msg) = LogMessage Warning (read ts) (unwords msg)
+parseMessage ("E":code:ts:msg) = LogMessage (Error (read code)) (read ts) (unwords msg)
+parseMessage l = Unknown (unwords l)
 
 parse :: String -> [LogMessage]
-parse s = map (parseMessage) (lines s)
+parse s = map (parseMessage . words) (lines s)
 
 -- Exercise 2
 insert :: LogMessage -> MessageTree -> MessageTree
@@ -34,12 +35,9 @@ inOrder Leaf = []
 inOrder (Node left m right) = (inOrder left) ++ [m] ++ (inOrder right)
 
 -- Exercise 5
-interestingMessages :: LogMessage -> [String]
-interestingMessages (LogMessage (Error s) _ msg)
-  | s >= 50 = [msg]
-  | otherwise = []
-interestingMessages _ = []
-
 whatWentWrong :: [LogMessage] -> [String]
 whatWentWrong [] = []
-whatWentWrong (m:ms) = interestingMessages m ++ whatWentWrong ms
+whatWentWrong ((LogMessage (Error s) _ msg):ms)
+  | s >= 50 = msg : whatWentWrong ms
+  | otherwise = whatWentWrong ms
+whatWentWrong (_:ms) = whatWentWrong ms
