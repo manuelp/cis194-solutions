@@ -1,6 +1,6 @@
 module Golf where
 
--- Exercise 1
+---------- Exercise 1
 
 -- Builds a list with the series of nth and multiples elements in the
 -- input list for every valid index position in it.
@@ -18,4 +18,11 @@ takeNths l first = map (l !!) (genIndexes first (length l))
 -- given one until the maximum.
 genIndexes :: Int -> Int -> [Int]
 genIndexes _ 0 = []
-genIndexes n s = map pred [n,n*2..s]
+genIndexes n m = map pred [n,n*2..m]
+
+--------- Exercise 2
+localMaxima :: [Integer] -> [Integer]
+localMaxima l@[_,x2,_] = if maximum l == x2 then [x2] else []
+localMaxima xs
+  | length xs > 3 = localMaxima (take 3 xs) ++ localMaxima (tail xs)
+  | otherwise = []
