@@ -20,6 +20,20 @@ genIndexes :: Int -> Int -> [Int]
 genIndexes _ 0 = []
 genIndexes n m = map pred [n,n*2..m]
 
+-- Another solution:
+-- skips :: [a] -> [[a]]
+-- skips xs = map ((flip nthItems) xs) [1..(length xs)]
+
+-- nthItems :: Int -> [a] -> [a]
+-- nthItems n = map last . filter (\ys -> length ys == n) . (splitChunks n)
+
+-- splitChunks :: Int -> [a] -> [[a]]
+-- splitChunks _ [] = [[]]
+-- splitChunks n xs
+--     | length xs <= n = [xs]
+--     | otherwise = [(take n xs)] ++ (splitChunks n (drop n xs)) 
+
+
 --------- Exercise 2
 localMaxima :: [Integer] -> [Integer]
 localMaxima l@[_,x2,_] = if maximum l == x2 then [x2] else []
