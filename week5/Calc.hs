@@ -85,5 +85,34 @@ exec s = case (compile s) of
            (Just p) -> SVM.stackVM p
            Nothing -> Left "Invalid stuff!"
       
+--
+-- Exercise 6
+--
+class HasVars a where
+    var :: String -> a
 
+instance HasVars (M.Map String Integer -> Maybe Integer) where
+    var s = M.lookup s
+  
+-- varLooker :: String -> M.Map String Integer -> Maybe Integer
+-- varLooker s = var s
+-- varLooker "Hello" $ M.singleton "Hello" 5
 
+-- class Expr a where
+--     lit :: Integer -> a
+--     add :: a -> a -> a
+--     mul :: a -> a -> a
+
+instance Expr (M.Map String Integer -> Maybe Integer) where
+    lit n = (\m -> Just n)
+    add a b = (\m -> if DM.isJust (a m) && DM.isJust (b m) 
+                     then Just $ foldl (+) 0 (DM.catMaybes [(a m), (b m)])
+                     else Nothing)
+    mul a b = (\m -> if DM.isJust (a m) && DM.isJust (b m) 
+                     then Just $ foldl (*) 1 (DM.catMaybes [(a m), (b m)])
+                     else Nothing)
+
+withVars :: [(String, Integer)]
+            -> (M.Map String Integer -> Maybe Integer)
+            -> Maybe Integer
+withVars vs exp = exp $ M.fromList vs
