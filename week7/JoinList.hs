@@ -12,7 +12,6 @@ data JoinList m a = Empty
 --
 -- Exercise 1
 --
-
 (+++) :: Monoid m => JoinList m a -> JoinList m a -> JoinList m a
 (+++) a b = Append (tag a <> tag b) a b
 
@@ -34,11 +33,11 @@ indexJ _ Empty = Nothing
 indexJ i (Single s v) = Just v
 indexJ i (Append s a b)
        | Size i >= size s = Nothing
-       | i < sublistSize a = indexJ i a
-       | otherwise = indexJ (i - sublistSize a) b
+       | i < subListSize a = indexJ i a
+       | otherwise = indexJ (i - subListSize a) b
 
-sublistSize :: (Sized b, Monoid b) => JoinList b a -> Int
-sublistSize = getSize . size . tag
+subListSize :: (Sized b, Monoid b) => JoinList b a -> Int
+subListSize = getSize . size . tag
 
 -- For testing:
 
@@ -61,3 +60,16 @@ jl = (Append (Size 4) (Append (Size 2) (Single (Size 1) 'a')
 
 testJl :: [(Int, Maybe Char)]
 testJl = zip [0..5] (map (flip indexJ $ jl) [0..5])
+
+-- Part 2
+dropJ :: (Sized b, Monoid b) => Int -> JoinList b a -> JoinList b a
+dropJ _ Empty = Empty
+dropJ 0 l = l
+dropJ n (Single _ _) = Empty
+dropJ n (Append s l r)
+      | subListSize l < n = dropJ (n - subListSize l) r
+      | otherwise = (dropJ n l) +++ r
+
+-- Check: 
+-- jlToList (dropJ n jl) == drop n (jlToList jl)
+
