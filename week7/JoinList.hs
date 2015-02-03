@@ -3,6 +3,7 @@ module JoinList where
 
 import Data.Monoid
 import Sized
+import Scrabble
 
 data JoinList m a = Empty
                    | Single m a
@@ -85,3 +86,8 @@ takeJ n (Append s l r)
 -- Check:
 -- jlToList (takeJ n jl) == take n (jlToList jl)
 
+--
+-- Exercise 3
+--
+scoreLine :: String -> JoinList Score String
+scoreLine s = Single (scoreString s) s
