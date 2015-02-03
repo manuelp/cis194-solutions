@@ -73,3 +73,15 @@ dropJ n (Append s l r)
 -- Check: 
 -- jlToList (dropJ n jl) == drop n (jlToList jl)
 
+-- Part 3
+takeJ :: (Sized b, Monoid b) => Int -> JoinList b a -> JoinList b a
+takeJ _ Empty = Empty
+takeJ 0 _ = Empty
+takeJ n (Single _ _) = Empty
+takeJ n (Append s l r)
+      | subListSize l <= n = l +++ (takeJ (n - subListSize l) r)
+      | otherwise = takeJ n l
+
+-- Check:
+-- jlToList (takeJ n jl) == take n (jlToList jl)
+
