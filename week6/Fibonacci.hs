@@ -1,6 +1,8 @@
 {-# OPTIONS_GHC -Wall #-}
 module Fibonacci where
 
+import Data.List
+
 --
 -- Exercise 1
 --
@@ -55,5 +57,18 @@ streamFromSeed f x = Cons x (streamFromSeed f $ f x)
 nats :: Stream Integer
 nats = streamFromSeed (+1) 0
 
+ruler :: Stream Integer
+ruler = interleaveStreams (streamRepeat 0) 
+                          (streamMap largestPow2 (streamFromSeed (+2) 2))
+
 interleaveStreams :: Stream a -> Stream a -> Stream a
 interleaveStreams (Cons a as) (Cons b bs) = Cons a (Cons b (interleaveStreams as bs))
+
+largestPow2 :: Integer -> Integer
+largestPow2 = toInteger . length . pows2
+
+pows2 :: Integer -> [Integer]
+pows2 = unfoldr (\b -> if b `mod` 2 == 0
+                       then Just (b, b `div` 2)
+                       else Nothing) 
+
