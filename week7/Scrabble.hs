@@ -8,6 +8,9 @@ import Data.Char
 newtype Score = Score Int
     deriving (Eq, Ord, Show, Num)
 
+getScore :: Score -> Int
+getScore (Score x) = x
+
 instance Monoid Score where
     mempty = Score 0
     mappend = (+)

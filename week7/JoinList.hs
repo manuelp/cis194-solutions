@@ -1,9 +1,13 @@
 {-# OPTIONS_GHC -Wall #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 module JoinList where
 
 import Data.Monoid
 import Sized
 import Scrabble
+import Buffer
+import Editor
 
 data JoinList m a = Empty
                    | Single m a
@@ -20,10 +24,6 @@ tag :: Monoid m => JoinList m a -> m
 tag Empty = mempty
 tag (Single m _) = m
 tag (Append m _ _) = m
-
--- instance Monoid m => Monoid (JoinList m a) where
---     mempty = Empty
---     mappend = (+++)
 
 --
 -- Exercise 2
@@ -91,3 +91,35 @@ takeJ n (Append s l r)
 --
 scoreLine :: String -> JoinList Score String
 scoreLine s = Single (scoreString s) s
+
+--
+-- Exercise 4
+--
+
+instance Monoid m => Monoid (JoinList m a) where
+    mempty = Empty
+    mappend = (+++)
+
+instance Buffer (JoinList (Score, Size) String) where
+    toString = unlines . jlToList
+    fromString = mconcat . map enlist . lines
+    line = indexJ
+    replaceLine i s b = mconcat . map enlist $ (fst p ++ [s] ++ (tail . snd) p) 
+                        where p = splitAt i (jlToList b)
+    numLines = getSize . snd . tag
+    value = getScore . fst . tag
+
+enlist :: String -> JoinList (Score, Size) String
+enlist s = Single (scoreString s, Size 1) s
+
+buf :: JoinList (Score, Size) String
+buf = (fromString . unlines)
+      [ "This buffer is for notes you don't want to save, and for"
+      , "evaluation of steam valve coefficients."
+      , "To load a different file, type the character L followed"
+      , "by the name of the file."
+      ]
+
+main :: IO ()
+main = runEditor editor $ buf
+
