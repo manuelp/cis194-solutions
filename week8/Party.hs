@@ -3,6 +3,7 @@ module Party where
 
 import Employee
 import Data.Monoid
+import Data.Tree
 
 --
 -- Exercise 1
@@ -16,3 +17,14 @@ instance Monoid GuestList where
 
 moreFun :: GuestList -> GuestList -> GuestList
 moreFun = max
+
+--
+-- Exercise 2
+--
+--treeFold :: ? -> Tree a -> b
+treeFold :: b -> (b -> a -> b) -> Tree a -> b
+treeFold e f (Node l []) = f e l
+treeFold e f (Node l es) = foldl f e (foldl (++) [l] (map flatten es))
+
+totalFun :: Tree Employee -> Fun
+totalFun = treeFold 0 (\f e -> f + empFun e) 
