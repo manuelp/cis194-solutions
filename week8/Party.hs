@@ -22,9 +22,8 @@ moreFun = max
 -- Exercise 2
 --
 --treeFold :: ? -> Tree a -> b
-treeFold :: b -> (b -> a -> b) -> Tree a -> b
-treeFold e f (Node l []) = f e l
-treeFold e f (Node l es) = foldl f e (foldl (++) [l] (map flatten es))
+treeFold :: (a -> [b] -> b) -> Tree a -> b
+treeFold f (Node x ts) = f x (map (treeFold f) ts)
 
 totalFun :: Tree Employee -> Fun
-totalFun = treeFold 0 (\f e -> f + empFun e) 
+totalFun = treeFold (\e fs -> empFun e + sum fs) 
