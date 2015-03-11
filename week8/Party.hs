@@ -27,3 +27,18 @@ treeFold f (Node x ts) = f x (map (treeFold f) ts)
 
 totalFun :: Tree Employee -> Fun
 totalFun = treeFold (\e fs -> empFun e + sum fs) 
+
+--
+-- Exercise 3
+--
+nextLevel :: Employee -> [(GuestList, GuestList)] -> (GuestList, GuestList)
+nextLevel e gls = (maximum (map (glCons e . snd) gls),
+                   maximum (map fst gls))
+
+-- Some "tests"
+test1 :: (GuestList, GuestList)
+test1 = nextLevel (Emp "A" 1) [(GL [] 0, GL [] 0)]
+
+test2 :: (GuestList, GuestList)
+test2 = nextLevel (Emp "A" 1) [(GL [(Emp "bossB" 3), (Emp "B" 2)] 5, 
+                                GL [(Emp "B" 2)] 2)]
